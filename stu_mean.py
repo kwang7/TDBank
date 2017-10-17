@@ -1,5 +1,5 @@
 '''
-Kelly Wang and jasper
+Kelly Wang and jaspercheiugn
 SoftDev1 pd7
 HW10--Average
 2017-10-17
@@ -40,12 +40,7 @@ for row in coursez:
     c.execute("INSERT INTO courses VALUES (?,?,?)",( code , mark, iD ))
 
 '''
-q = "SELECT name, peeps.id , mark FROM peeps, courses WHERE peeps.id = courses.id;"
-foo = c.execute(q)
-print foo
 
-for bar in foo:
-    print bar
 '''
 #---------------------------------------------------------------------------------------------
 
@@ -54,7 +49,7 @@ grades = {} #store students info here
 #select each student's grades and add it to their corresponding key in the dictionary
 coolGrades = c.execute("SELECT name, peeps.id, mark FROM peeps, courses WHERE peeps.id = courses.id;")
 for row in coolGrades:
-    #print row
+    print row
     peep = row[0]
     idee = row [1]
     grade = row[2]
@@ -64,21 +59,38 @@ for row in coolGrades:
         grades[idee].append(grade)
     else:
         grades[idee].append(grade)
-
+'''
+for key in grades:
+    print key
+    print grades[key]
+'''
+        
 #calculate avg
-for key in grades:
+def calcAvg(key):
     coolgrades = grades[key][1:len(grades[key])]
-    avg = sum(coolgrades) / len (coolgrades)
-    grades[key].append(avg)
+    #print coolgrades
+    avg = ( sum(coolgrades) / float(len(coolgrades))) 
+    return avg
     
-#display everything
-for key in grades:
-    #first item in the dict is name
-    print 'NAME: ' , grades[key][0]
-    print 'ID: ', key
-    #last item in the dict is avg
-    print 'AVG: ' ,grades[key][len(grades[key])-1]
 
+#create table of ids and associated averages
+c.execute("CREATE TABLE peeps_avg ( id INTEGER, avg NUMERIC )")
+for key in grades:
+    c.execute("INSERT INTO peeps_avg VALUES ( ? , ? )" , ( key, calcAvg(key)))
+    
+def updateGrades():
+    
+        
+#display everything
+def displayEverything():
+    for key in grades:
+        #first item in the dict is name
+        print 'NAME: ' , grades[key][0]
+        print 'ID: ', key
+        print 'AVG: ' , calcAvg(key)
+        print '------'
+        
+displayEverything()    
 
 db.commit() #save changes
 db.close()  #close database
