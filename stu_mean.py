@@ -80,7 +80,7 @@ for key in grades:
 
 #create table of ids and associated averages
 q = "CREATE TABLE peeps_avg ( id INTEGER, avg NUMERIC )"
-pp = c.execute(q)
+c.execute(q)
 def addStuff():
     for key in grades:
         #print key
