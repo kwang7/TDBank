@@ -46,7 +46,6 @@ for row in coursez:
 grades = {} #store students info here.
 #The key is their id
 #First index is their name
-#Last index is their average
 
 #select each student's grades and add it to their corresponding key in the dictionary
 def makeDict():
@@ -72,9 +71,6 @@ def calcAvg(key):
     avg = ( sum(coolgrades) / float(len(coolgrades))) 
     return avg
 
-#calculate all averages and add them to the dict
-for key in grades:
-    grades[key].append(calcAvg(key))
 
 '''
 for key in grades:
@@ -100,17 +96,12 @@ def addCourse( c0de , marK , iDee ):
     return updateAvg( marK, iDee );
 
 def updateAvg( mark,iDee ):
-    #store the old avg
-    oldAvg = grades[iDee][ ( len(grades[iDee]) )-1 ]
-    #add the new grade to the dictionary and remove the old avg
-    grades[iDee][ ( len(grades[iDee]) ) - 1 ] = mark
+    #add the new grade to the dictionary
+    grades[iDee].append(mark)
     #calculate new avg
     newAvg = calcAvg(iDee);
     #print newAvg
     c.execute("UPDATE peeps_avg SET avg = ? WHERE id = ? ",(newAvg,iDee))
-    #add new avg to the dict
-    grades[iDee].append(newAvg)
-    return oldAvg
 
 addCourse( 'physics', 99, 10 )
 addCourse( 'calc', 23, 1 )
