@@ -38,43 +38,49 @@ for row in coursez:
     mark = row['mark']
     iD = row['id']
     qq =c.execute("INSERT INTO courses VALUES (?,?,?)",( code , mark, iD ))
-'''
+    '''
 
 '''
 #---------------------------------------------------------------------------------------------
 
-grades = {} #store students info here
+grades = {} #store students info here.
+#The key is their id
+#First index is their name
+#Last index is their average
 
 #select each student's grades and add it to their corresponding key in the dictionary
 def makeDict():
     coolGrades = c.execute("SELECT name, peeps.id, mark FROM peeps, courses WHERE peeps.id = courses.id;")
     for row in coolGrades:
-        print row
+        #print row
         peep = row[0]
         idee = row [1]
         grade = row[2]
+        #add grades to dictionary, key is student id
         if idee not in grades:
             grades[idee] = [peep]
             grades[idee].append(grade)
         else:
             grades[idee].append(grade)
-        return grades 
+    return grades 
 makeDict()
 
-
-'''
-for key in grades:
-    print key
-    print grades[key]
-'''
-
-#calculate avg
+#fxn to calculate avg
 def calcAvg(key):
     coolgrades = grades[key][1:len(grades[key])]
     #print coolgrades
     avg = ( sum(coolgrades) / float(len(coolgrades))) 
     return avg
 
+#calculate all averages and add them to the dict
+for key in grades:
+    grades[key].append(calcAvg(key))
+
+'''
+for key in grades:
+    print key
+    print grades[key]
+'''
 
 #create table of ids and associated averages
 q = "CREATE TABLE peeps_avg ( id INTEGER, avg NUMERIC )"
@@ -86,24 +92,31 @@ def addStuff():
         c.execute("INSERT INTO peeps_avg VALUES ( ? , ? )" , ( key, calcAvg(key)))
     return grades
 addStuff()
-'''    
+
 def addCourse( c0de , marK , iDee ):
-    #add info to courses
+    #add info to courses table
     c.execute("INSERT INTO courses VALUES( ? , ? , ? )", (c0de,marK,iDee))
-    #add info to dictionary
-    grades[iDee].append(marK)
-    
-#addCourse( 'physics', 99, 10 )
+    #update average
+    return updateAvg( marK, iDee );
+
+def updateAvg( mark,iDee ):
+    #store the old avg
+    oldAvg = grades[iDee][ ( len(grades[iDee]) )-1 ]
+    #add the new grade to the dictionary and remove the old avg
+    grades[iDee][ ( len(grades[iDee]) ) - 1 ] = mark
+    #calculate new avg
+    newAvg = calcAvg(iDee);
+    #print newAvg
+    c.execute("UPDATE peeps_avg SET avg = ? WHERE id = ? ",(newAvg,iDee))
+    #add new avg to the dict
+    grades[iDee].append(newAvg)
+    return oldAvg
+
+addCourse( 'physics', 99, 10 )
 addCourse( 'calc', 23, 1 )
 addCourse( 'cycling', 17, 1 )
-'''
-'''
-def updateAvg(iDee):
-    newAvg = calcAvg(iDee);
-    c.execute("UPDATE peeps_avg SET avg = ? WHERE id = ? ",(newAvg,iDee))
-updateAvg(1);
-updateAvg(2);
-  '''  
+
+
 #display everything
 def displayEverything():
     for key in grades:
